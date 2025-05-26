@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-
 void Connection_tracker::add_connection(Block* input, Block* output, Input_node node)
 {
     // LIGHT blocks should not have more than one input
@@ -40,7 +39,8 @@ void Connection_tracker::delete_connection(std::list<Connection>::iterator iter)
 void Connection_tracker::delete_connecitons_with(const Block* block)
 {
     m_connections.remove_if(
-        [block](const Connection& c) {
+        [block](const Connection& c)
+        {
             // needed so that connections don't just remain in their previous state
             c.output->recieve_top_signal(false);
             c.output->recieve_bot_signal(false);
