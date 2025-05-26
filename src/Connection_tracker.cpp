@@ -5,6 +5,18 @@
 
 void Connection_tracker::add_connection(Block* input, Block* output, Input_node node)
 {
+    // LIGHT blocks should not have more than one input
+    if (output->get_type() == Block_type::LIGHT) {
+        // check all the connections and make sure that there isn't already 
+        // a connection that contains output
+
+        for (Connection& connection : m_connections) {
+            if (connection.output == output) {
+                return;
+            }
+        }
+    }
+
     m_connections.push_back(Connection{input, output, node});
 }
 
