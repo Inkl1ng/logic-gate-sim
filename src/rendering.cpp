@@ -4,7 +4,8 @@ void rendering::draw_blocks(Block_container& blocks)
 {
     // indentation rules be dammed
     blocks.for_each(
-        [](Block& b){ 
+        [](Block& b)
+        { 
             // main body the gate
 
             DrawRectangleRec(b.get_rect(), BLUE);
@@ -122,8 +123,8 @@ void rendering::draw_blocks(Block_container& blocks)
 void rendering::draw_connections(Connection_tracker& connections)
 {
     auto draw_connections {
-        [](Connection& connection) {
-            
+        [](Connection& connection)
+        {    
             Vector2 input_loc {};
             switch (connection.node) {
             case Input_node::TOP:

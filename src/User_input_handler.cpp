@@ -74,7 +74,8 @@ void User_input_handler::make_connection()
     // yes I know this function is hideous
 
     auto mouse_clicked_in_output {
-        [](Block& b) {
+        [](Block& b)
+        {
             bool mouse_in_output {
                 CheckCollisionPointCircle(
                     GetMousePosition(),
@@ -87,36 +88,50 @@ void User_input_handler::make_connection()
     };
 
     auto mouse_in_top_input {
-        [](Block& b) {
-            return CheckCollisionPointCircle(
-                GetMousePosition(),
-                b.get_top_input_loc(),
-                Block::get_node_radius()
-            );
+        [](Block& b)
+        {
+            bool correct_type {b.get_type() != Block_type::NOT && b.get_type() != Block_type::LIGHT};
+            bool collides {
+                CheckCollisionPointCircle(
+                    GetMousePosition(),
+                    b.get_top_input_loc(),
+                    Block::get_node_radius()
+                )
+            };
+
+            return correct_type && collides;
         }
     };
 
     auto mouse_in_center_input {
-        [](Block& b) {
-            if (b.get_type() != Block_type::NOT && b.get_type() != Block_type::LIGHT) {
-                return false;
-            }
-            
-            return CheckCollisionPointCircle(
-                GetMousePosition(),
-                b.get_center_input_loc(),
-                Block::get_node_radius()
-            );
+        [](Block& b)
+        {
+            bool correct_type {b.get_type() == Block_type::NOT || b.get_type() == Block_type::LIGHT};
+            bool collides {
+                CheckCollisionPointCircle(
+                    GetMousePosition(),
+                    b.get_center_input_loc(),
+                    Block::get_node_radius()
+                )
+            };
+
+            return correct_type && collides;
         }
     };
 
     auto mouse_in_bot_input {
-        [](Block& b) {
-            return CheckCollisionPointCircle(
-                GetMousePosition(),
-                b.get_bot_input_loc(),
-                Block::get_node_radius()
-            );
+        [](Block& b)
+        {
+            bool correct_type {b.get_type() != Block_type::NOT && b.get_type() != Block_type::LIGHT};
+            bool collides {
+                CheckCollisionPointCircle(
+                    GetMousePosition(),
+                    b.get_bot_input_loc(),
+                    Block::get_node_radius()
+                )
+            };
+
+            return correct_type && collides;
         }      
     };
 
@@ -133,10 +148,7 @@ void User_input_handler::make_connection()
 
         m_connection_input = &(*block);
     }
-    else {
-        if (!IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            return;
-        }
+    else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         // check top input nodes first
         bool found {};
         auto block {m_blocks.find_if(mouse_in_top_input, found)};
@@ -145,6 +157,7 @@ void User_input_handler::make_connection()
             // "&(*block)" is the input node
             m_connections.add_connection(m_connection_input, &(*block), Input_node::TOP);
             m_connection_input = nullptr;
+            return;
         }
 
         // check the middle input nodes (if they exist)
@@ -152,6 +165,7 @@ void User_input_handler::make_connection()
         if (found) {
             m_connections.add_connection(m_connection_input, &(*block), Input_node::CENTER);
             m_connection_input = nullptr;
+            return;
         }
 
         // check the bottom input nodes if the top input nodes don't work
@@ -160,11 +174,10 @@ void User_input_handler::make_connection()
             // same thing as above
             m_connections.add_connection(m_connection_input, &(*block), Input_node::BOT);
             m_connection_input = nullptr;
+            return;
         }
-        // top and bottom input gates don't work
-        else {
-            m_connection_input = nullptr;
-        }
+
+        m_connection_input = nullptr;
     }
 }
 
